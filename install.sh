@@ -82,9 +82,9 @@ echo "  $APP_DIR"
 echo "  $CFG"
 echo
 echo "next:"
-echo "  1) edit $CFG  (set remote.host / port)"
+echo "  1) edit $CFG  (set remote.host / port, and socks.user / socks.pass)"
 echo "  2) open $APP_DIR  (or: open -a TelegramProxy)"
-echo "  3) Telegram → Settings → Advanced → Connection type →"
-echo "     SOCKS5 127.0.0.1:1080 + your subscription user/pass"
+echo "  3) launcher auto-injects via tg://socks when socks.user/pass are set"
+echo "     (or set SOCKS5 127.0.0.1:1080 manually in Telegram)"
 echo
 echo "re-run ./install.sh anytime (idempotent; config not overwritten)"

@@ -8,5 +8,11 @@
     "port": 443,
     "verify_tls": false,
     "server_name": null
+  },
+  "socks": {
+    "server": "127.0.0.1",
+    "port": 1080,
+    "user": "YOUR_SUBSCRIPTION_UUID",
+    "pass": "YOUR_SUBSCRIPTION_UUID"
   }
 }

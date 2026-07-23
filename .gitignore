@@ -3,7 +3,18 @@
 *~
 .idea/
 .vscode/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
 # never commit live credentials / node endpoints
 config.json
+**/config.json
 *.local.json
+.env
+.env.*
+
+# Telegram trademark icon — copied from Telegram.app at install time
 AppIcon.icns
+**/AppIcon.icns

@@ -15,11 +15,42 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Build tg://socks deep link from config (never hard-code credentials here).
+socks_deep_link() {
+    /usr/bin/python3 - "$CONFIG" <<'PY'
+import json, sys, urllib.parse
+from pathlib import Path
+
+path = Path(sys.argv[1]).expanduser()
+if not path.is_file():
+    sys.exit(0)
+data = json.loads(path.read_text())
+local = data.get("local") or {}
+socks = data.get("socks") or {}
+server = socks.get("server") or local.get("host") or "127.0.0.1"
+port = int(socks.get("port") or local.get("port") or 1080)
+user = socks.get("user") or ""
+password = socks.get("pass") or ""
+if not user or not password:
+    sys.exit(0)
+qs = urllib.parse.urlencode(
+    {"server": server, "port": port, "user": user, "pass": password}
+)
+print(f"tg://socks?{qs}")
+PY
+}
+
 /usr/bin/python3 "$TUNNEL_SCRIPT" -c "$CONFIG" &
 TUNNEL_PID=$!
 sleep 0.5
 
 open -a "Telegram"
+
+SOCKS_URL="$(socks_deep_link || true)"
+if [ -n "${SOCKS_URL:-}" ]; then
+    sleep 3
+    open "$SOCKS_URL"
+fi
 
 while pgrep -x "Telegram" > /dev/null 2>&1; do
     sleep 2
