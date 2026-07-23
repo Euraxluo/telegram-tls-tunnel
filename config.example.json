@@ -1,0 +1,12 @@
+{
+  "local": {
+    "host": "127.0.0.1",
+    "port": 1080
+  },
+  "remote": {
+    "host": "YOUR_NODE.example.com",
+    "port": 443,
+    "verify_tls": false,
+    "server_name": null
+  }
+}

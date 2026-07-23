@@ -1,0 +1,9 @@
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+# never commit live credentials / node endpoints
+config.json
+*.local.json
+AppIcon.icns

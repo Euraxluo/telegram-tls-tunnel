@@ -1,0 +1,45 @@
+#!/bin/bash
+# TelegramProxy launcher — start TLS tunnel with Telegram; follow app lifecycle.
+# Designed for ~/Applications/TelegramProxy.app (not login-item / LaunchAgent).
+
+set -euo pipefail
+
+TUNNEL_SCRIPT="${TELEGRAM_TLS_TUNNEL_BIN:-$HOME/.local/bin/telegram_tls_tunnel.py}"
+CONFIG="${TELEGRAM_TLS_TUNNEL_CONFIG:-$HOME/.config/telegram-tls-tunnel/config.json}"
+PID_FILE="${TELEGRAM_TLS_TUNNEL_PID:-/tmp/telegram_tls_tunnel.pid}"
+TUNNEL_PID=""
+I_OWN_TUNNEL=false
+
+cleanup() {
+    if [ "$I_OWN_TUNNEL" = true ] && [ -n "${TUNNEL_PID}" ] && kill -0 "$TUNNEL_PID" 2>/dev/null; then
+        kill "$TUNNEL_PID" 2>/dev/null || true
+        rm -f "$PID_FILE"
+    fi
+}
+trap cleanup EXIT
+
+if [ -f "$PID_FILE" ]; then
+    OLD_PID="$(cat "$PID_FILE" 2>/dev/null || true)"
+    if [ -n "$OLD_PID" ] && kill -0 "$OLD_PID" 2>/dev/null; then
+        open -a "Telegram"
+        exit 0
+    fi
+    rm -f "$PID_FILE"
+fi
+
+/usr/bin/python3 "$TUNNEL_SCRIPT" -c "$CONFIG" &
+TUNNEL_PID=$!
+I_OWN_TUNNEL=true
+echo "$TUNNEL_PID" > "$PID_FILE"
+sleep 0.5
+
+if ! kill -0 "$TUNNEL_PID" 2>/dev/null; then
+    rm -f "$PID_FILE"
+    I_OWN_TUNNEL=false
+fi
+
+open -a "Telegram"
+
+while pgrep -x "Telegram" > /dev/null 2>&1; do
+    sleep 2
+done
